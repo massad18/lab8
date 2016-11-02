@@ -11,7 +11,7 @@ import java.util.*;
 
 /**
  * Soccer player database -- presently, all dummied up
- * 
+ *
  * @author *** put your name here ***
  * @version *** put date of completion here ***
  *
@@ -26,8 +26,8 @@ public class SoccerDatabase implements SoccerDB {
      * @see SoccerDB#addPlayer(String, String, int, String)
      */
     @Override
-	public boolean addPlayer(String firstName, String lastName,
-			int uniformNumber, String teamName) {
+    public boolean addPlayer(String firstName, String lastName,
+                             int uniformNumber, String teamName) {
         if (database.containsKey(firstName+"##"+lastName)) {
             Log.i("add player", firstName+" "+lastName+" ERROR");
             return false;
@@ -38,7 +38,7 @@ public class SoccerDatabase implements SoccerDB {
             Log.i("add player", firstName+" "+lastName+" has been added");
             return true;
         }
-	}
+    }
 
     /**
      * remove a player
@@ -63,7 +63,7 @@ public class SoccerDatabase implements SoccerDB {
      * @see SoccerDB#getPlayer(String, String)
      */
     @Override
-	public SoccerPlayer getPlayer(String firstName, String lastName) {
+    public SoccerPlayer getPlayer(String firstName, String lastName) {
         return database.get(firstName+"##"+lastName);
     }
 
@@ -186,7 +186,7 @@ public class SoccerDatabase implements SoccerDB {
      */
     @Override
     // report number of players on a given team (or all players, if null)
-	public int numPlayers(String teamName) {
+    public int numPlayers(String teamName) {
         if (teamName == null) {
             return database.size();
         }
@@ -200,17 +200,54 @@ public class SoccerDatabase implements SoccerDB {
             }
             return num;
         }
-	}
+    }
 
     /**
      * gives the nth player on a the given team
      *
      * @see SoccerDB#playerNum(int, String)
      */
-	// get the nTH player
-	@Override
+    // get the nTH player
+    @Override
     public SoccerPlayer playerNum(int idx, String teamName) {
-        return null;
+        if (teamName == null) {
+            int num = 0;
+            Enumeration <SoccerPlayer> players = database.elements();
+            if (!players.hasMoreElements()) {
+                return null;
+            }
+            else {
+                SoccerPlayer player = players.nextElement();
+                while (players.hasMoreElements()) {
+                    num++;
+                    if (num == idx+1) {
+                        break;
+                    }
+                    player = players.nextElement();
+                }
+                return player;
+            }
+        }
+        else {
+            int num = 0;
+            Enumeration <SoccerPlayer> players = database.elements();
+            if (!players.hasMoreElements()) {
+                return null;
+            }
+            else {
+                SoccerPlayer player = players.nextElement();
+                while (players.hasMoreElements()) {
+                    if (player.getTeamName().equals(teamName)) {
+                        num++;
+                        if (num == idx+1) {
+                            break;
+                        }
+                    }
+                    player = players.nextElement();
+                }
+                return player;
+            }
+        }
     }
 
     /**
@@ -218,22 +255,22 @@ public class SoccerDatabase implements SoccerDB {
      *
      * @see SoccerDB#readData(java.io.File)
      */
-	// read data from file
+    // read data from file
     @Override
-	public boolean readData(File file) {
+    public boolean readData(File file) {
         return file.exists();
-	}
+    }
 
     /**
      * write database data to a file
      *
      * @see SoccerDB#writeData(java.io.File)
      */
-	// write data to file
+    // write data to file
     @Override
-	public boolean writeData(File file) {
+    public boolean writeData(File file) {
         return false;
-	}
+    }
 
     /**
      * helper method that logcat-logs a string, and then returns the string.
@@ -250,10 +287,10 @@ public class SoccerDatabase implements SoccerDB {
      *
      * @see edu.up.cs371.soccer_application.SoccerDB#getTeams()
      */
-	// return list of teams
+    // return list of teams
     @Override
-	public HashSet<String> getTeams() {
+    public HashSet<String> getTeams() {
         return new HashSet<String>();
-	}
+    }
 
 }
