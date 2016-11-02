@@ -47,7 +47,14 @@ public class SoccerDatabase implements SoccerDB {
      */
     @Override
     public boolean removePlayer(String firstName, String lastName) {
-        return false;
+        if (database.containsKey(firstName + "##" + lastName)) {
+            database.remove(firstName + "##" + lastName);
+            Log.i("remove player", firstName+" "+lastName+" has been removed");
+            return true;
+        } else {
+            Log.i("remove player", firstName+" "+lastName+" ERROR");
+            return false;
+        }
     }
 
     /**
@@ -57,7 +64,7 @@ public class SoccerDatabase implements SoccerDB {
      */
     @Override
 	public SoccerPlayer getPlayer(String firstName, String lastName) {
-        return null;
+        return database.get(firstName+"##"+lastName);
     }
 
     /**
