@@ -5,6 +5,7 @@ import android.util.Log;
 import edu.up.cs371.soccer_application.soccerPlayer.SoccerPlayer;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
@@ -258,7 +259,58 @@ public class SoccerDatabase implements SoccerDB {
     // read data from file
     @Override
     public boolean readData(File file) {
-        return file.exists();
+        Scanner scanner;
+        Log.i("readData", "Method Called");
+        try {
+            scanner = new Scanner(file);
+        } catch(FileNotFoundException e) {
+            Log.i("readData", "File Not Found");
+            return false;
+        }
+        while (scanner.hasNextLine()) {
+            Log.i("readData", "Data Read");
+            String firstName = scanner.nextLine();
+            if (firstName.equals("")) {
+                firstName = scanner.nextLine();
+            }
+            Log.i("sample", firstName);
+            String lastName = scanner.nextLine();
+            String teamName = scanner.nextLine();
+            int uniform = scanner.nextInt();
+            int goals = scanner.nextInt();
+            int assists = scanner.nextInt();
+            int shots = scanner.nextInt();
+            int saves = scanner.nextInt();
+            int fouls = scanner.nextInt();
+            int yellow = scanner.nextInt();
+            int red = scanner.nextInt();
+
+            SoccerPlayer player = new SoccerPlayer(firstName, lastName, uniform, teamName);
+            database.put(firstName+"##"+lastName, player);
+            while (player.getGoals() != goals) {
+                player.bumpGoals();
+            }
+            while (player.getAssists() != assists) {
+                player.bumpAssists();
+            }
+            while (player.getShots() != shots) {
+                player.bumpShots();
+            }
+            while (player.getSaves() != saves) {
+                player.bumpSaves();
+            }
+            while (player.getFouls() != fouls) {
+                player.bumpFouls();
+            }
+            while (player.getYellowCards() != yellow) {
+                player.bumpYellowCards();
+            }
+            while (player.getRedCards() != red) {
+                player.bumpRedCards();
+            }
+        }
+        scanner.close();
+        return true;
     }
 
     /**
@@ -269,7 +321,37 @@ public class SoccerDatabase implements SoccerDB {
     // write data to file
     @Override
     public boolean writeData(File file) {
-        return false;
+        int num = 1;
+        PrintWriter pw;
+        try {
+            pw = new PrintWriter(file);
+        }catch(FileNotFoundException e){
+            Log.i("writeData", "File Not Found");
+            return false;
+        }
+        Enumeration <SoccerPlayer> players = database.elements();
+        while (players.hasMoreElements()) {
+            SoccerPlayer player = players.nextElement();
+            pw.println(logString(player.getFirstName()));
+            pw.println(logString(player.getLastName()));
+            pw.println(logString("" + player.getTeamName()));
+            pw.println(logString("" + player.getUniform()));
+            pw.println(logString("" + player.getGoals()));
+            pw.println(logString("" + player.getAssists()));
+            pw.println(logString("" + player.getShots()));
+            pw.println(logString("" + player.getSaves()));
+            pw.println(logString("" + player.getFouls()));
+            pw.println(logString("" + player.getYellowCards()));
+            if (num < database.size()) {
+                pw.println(logString("" + player.getRedCards()));
+            }
+            else {
+                pw.print(logString("" + player.getRedCards()));
+            }
+            num++;
+        }
+        pw.close();
+        return true;
     }
 
     /**
@@ -290,7 +372,14 @@ public class SoccerDatabase implements SoccerDB {
     // return list of teams
     @Override
     public HashSet<String> getTeams() {
-        return new HashSet<String>();
+        HashSet<String> teamNames = new HashSet<>();
+        Enumeration <SoccerPlayer> players = database.elements();
+        while (players.hasMoreElements()) {
+            SoccerPlayer player = players.nextElement();
+            String teamName = player.getTeamName();
+            teamNames.add(teamName);
+        }
+        return teamNames;
     }
 
 }
